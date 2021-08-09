@@ -10,12 +10,15 @@ import lxml.html as lh
 import cx_Oracle
 import os
 #Set Connection to Oracle
-connection = cx_Oracle.connect('<User>/<Password>@<Host>/<SID>')
+#dsn_tns = cx_Oracle.makedsn(os.environ.get('HOST') , os.environ.get('PORT'), service_name = os.environ.get('SID'))
+#connection = cx_Oracle.Connection(os.environ.get('USER'),os.environ.get('PSWD'),dsn_tns)
+#connection = cx_Oracle.connect(os.environ.get("USER")+'/'+os.environ.get("PSWD")+'@'+os.environ.get("HOST")+'/'+os.environ.get("SID"))
+connection = cx_Oracle.connect(os.environ.get("USER")+'/'+os.environ.get("PSWD"))
 cur=connection.cursor()
 now = datetime.now()
 
 # Get/Set Input parameters
-file_name = '/home/oracle/logs/dref/' + str(sys.argv[1]) + '_' + now.strftime("%Y%m%d%H%M%S") + '.dbg'
+file_name = os.environ.get('LOG_DIR') + '/' + str(sys.argv[1]) + '_' + now.strftime("%Y%m%d%H%M%S") + '.dbg'
 url = str(sys.argv[2])
 try:
     tableIdx = int(sys.argv[3])

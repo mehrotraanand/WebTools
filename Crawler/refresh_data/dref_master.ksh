@@ -1,6 +1,12 @@
 #!/bin/ksh
-. /home/oracle/.profile
-LOG_DIR="/home/oracle/logs/dref"
+. ~/.profile
+export LOG_DIR="$HOME/logs/WebTools"
+export BASE_DIR="$HOME/WebTools"
+export HOST=<HOST>
+export PORT=<PORT>
+export SID=<SID>
+export UID=<USERNAME>
+export PSWD=<PASSWORD>
 echo "MAIN: LOG_DIR is $LOG_DIR"
 procName=`basename ${0}`
 
@@ -13,8 +19,8 @@ echo "Find the detail log for the process in ${LOG_DIR}/${LOG_FILE} at $(uname -
 exec 3>&1 4>&2 >${LOG_DIR}/${LOG_FILE} 2>&1
 
 echo "MAIN: STARTED AT = $(date) "
-/usr/bin/python /home/oracle/refresh_data/dref_master.py
+/usr/bin/python $BASE_DIR/dref_master.py
 echo "MAIN: FINISHED AT = $(date) "
-find /home/oracle/logs/dref/ -name \*.log -mtime +7 -exec rm -f {} \;
-find /home/oracle/logs/dref/ -name \*.dbg -mtime +7 -exec rm -f {} \;
+find $LOG_DIR -name \*.log -mtime +7 -exec rm -f {} \;
+find $LOG_DIR -name \*.dbg -mtime +7 -exec rm -f {} \;
 exec 1>&3 2>&4

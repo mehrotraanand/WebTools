@@ -1,7 +1,10 @@
 import cx_Oracle
 import os
 import sys
-connection = cx_Oracle.connect('<user>/<password>@<host>/<sid>')
+#dsn_tns = cx_Oracle.makedsn(os.environ.get('HOST') , os.environ.get('PORT'), service_name = os.environ.get('SID'))
+#connection = cx_Oracle.Connection(os.environ.get('USER'),os.environ.get('PSWD'),dsn_tns)
+#connection = cx_Oracle.connect(os.environ.get("USER")+'/'+os.environ.get("PSWD")+'@'+os.environ.get("HOST")+'/'+os.environ.get("SID"))
+connection = cx_Oracle.connect(os.environ.get("USER")+'/'+os.environ.get("PSWD"))
 ver=connection.version
 #print('DB version : '+ ver)
 # Master Cursor
@@ -30,23 +33,23 @@ for result in cur:
     # 
     if result[5] == 1:
        if str(result[6]) == 'None':
-          os.system('python /home/oracle/refresh_data/dref_from_web.py ' + result[1] + ' "' + result[0] + '" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]))
+          os.system('python ' + os.environ.get("BASE_DIR") + '/dref_from_web.py ' + result[1] + ' "' + result[0] + '" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]))
        else:
-          os.system('python /home/oracle/refresh_data/dref_from_web.py ' + result[1] + ' "' + result[0] + '" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]) + ' ' + result[6])
+          os.system('python ' + os.environ.get("BASE_DIR") + '/dref_from_web.py ' + result[1] + ' "' + result[0] + '" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]) + ' ' + result[6])
     if result[5] == 2:
        stockcur=connection.cursor()
        stockcur.execute("select replace(account_name,'Merril-') from fin_account where account_name like 'Merril-%' union select stock_type from fin_stock_history")
        for stock in stockcur:
            print(stock[0])
            if str(result[6]) == 'None':
-              os.system('python /home/oracle/refresh_data/dref_from_web.py ' + result[1] + ' "' + result[0]+stock[0]+'/download-data" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]))
+              os.system('python ' + os.environ.get("BASE_DIR") + '/dref_from_web.py ' + result[1] + ' "' + result[0]+stock[0]+'/download-data" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]))
            else:
-              os.system('python /home/oracle/refresh_data/dref_from_web.py ' + result[1] + ' "' + result[0]+stock[0]+'/download-data" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]) + ' ' + str(stock[0]))
+              os.system('python ' + os.environ.get("BASE_DIR") + '/dref_from_web.py ' + result[1] + ' "' + result[0]+stock[0]+'/download-data" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]) + ' ' + str(stock[0]))
        stockcur.close()
     if result[5] == 99:
        if str(result[6]) == 'None':
-          os.system('python /home/oracle/refresh_data/dref_from_web.py ' + result[1] + ' "' + result[0] + '" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]))
+          os.system('python ' + os.environ.get("BASE_DIR") + '/dref_from_web.py ' + result[1] + ' "' + result[0] + '" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]))
        else:
-          os.system('python /home/oracle/refresh_data/dref_from_web.py ' + result[1] + ' "' + result[0] + '" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]) + ' ' + result[6])
+          os.system('python ' + os.environ.get("BASE_DIR") + '/dref_from_web.py ' + result[1] + ' "' + result[0] + '" ' + str(result[2]) + ' ' + result[3] + ' ' + result[4] + ' ' + str(result[5]) + ' ' + result[6])
 cur.close()
 connection.close
