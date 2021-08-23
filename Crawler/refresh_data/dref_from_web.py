@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import lxml.html as lh
 import cx_Oracle
 import os
+import html5lib
 #Set Connection to Oracle
 #dsn_tns = cx_Oracle.makedsn(os.environ.get('HOST') , os.environ.get('PORT'), service_name = os.environ.get('SID'))
 #connection = cx_Oracle.Connection(os.environ.get('USER'),os.environ.get('PSWD'),dsn_tns)
@@ -19,6 +20,7 @@ now = datetime.now()
 
 # Get/Set Input parameters
 file_name = os.environ.get('LOG_DIR') + '/' + str(sys.argv[1]) + '_' + now.strftime("%Y%m%d%H%M%S") + '.dbg'
+html_file = os.environ.get('LOG_DIR') + '/' + str(sys.argv[1]) + '_' + now.strftime("%Y%m%d%H%M%S") + '.html'
 url = str(sys.argv[2])
 try:
     tableIdx = int(sys.argv[3])
@@ -36,7 +38,15 @@ else:
 
 # Identify the HTML table that need to extracted
 print(url)
-tables = pd.read_html(url)
+try:
+   tables = pd.read_html(url)
+except:
+    print('failed to read url')
+    print('curl "'+url+'" --output '+ html_file)
+    os.system('curl "'+url+'" --output '+ html_file)
+    #dataFrame = BeautifulSoup(open(html_file,'r').read()).find('table')
+    tables = pd.read_html(html_file)
+
 print('number of table : ' + str(len(tables)))
 #Set Data Frame
 df = tables[tableIdx]
@@ -51,9 +61,9 @@ f.write("NUMBER OF COLUMNS:" + str(len(df.columns))+"\n")
 createTableStr = 'create table ' + stg_table + '(' 
 for colIdx in range(1, len(df.columns)+1):
     if colIdx == len(df.columns):
-       createTableStr += 'var'+str(colIdx)+' VARCHAR2(100))'
+       createTableStr += 'var'+str(colIdx)+' VARCHAR2(200))'
     else:
-       createTableStr += 'var'+str(colIdx)+' VARCHAR2(100), '
+       createTableStr += 'var'+str(colIdx)+' VARCHAR2(200), '
 f.write(createTableStr+"\n")
 f.flush()
 
